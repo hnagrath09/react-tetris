@@ -24,9 +24,11 @@ const App = () => {
         </div>
         <div className="px-8 mb-4 border-b-8 border-l-8 border-r-8 border-black">
           <div
-            className="w-full mx-auto mt-8 mb-8 border border-gray-700 shadow-inner"
+            className="w-full p-2 mx-auto mt-8 mb-8 border border-gray-700 shadow-inner"
             style={{ height: "400px", backgroundColor: "#9ead86" }}
-          ></div>
+          >
+            <div className="w-2/3 h-full border-2 border-black"></div>
+          </div>
         </div>
       </div>
       <div className="px-12">
