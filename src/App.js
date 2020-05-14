@@ -1,6 +1,19 @@
 import React from "react";
 
 const App = () => {
+  const renderCells = () => {
+    const arr = [];
+    let h = 0;
+    for (let i = 0; i < 20; i++) {
+      arr[i] = [];
+      for (let j = 0; j < 10; j++) {
+        arr[i].push(h);
+        h++;
+      }
+    }
+    return arr;
+  };
+
   return (
     <div
       className="h-screen max-w-lg pt-4 pb-64 mx-auto shadow-lg"
@@ -25,9 +38,29 @@ const App = () => {
         <div className="px-8 mb-4 border-b-8 border-l-8 border-r-8 border-black">
           <div
             className="w-full p-2 mx-auto mt-8 mb-8 border border-gray-700 shadow-inner"
-            style={{ height: "400px", backgroundColor: "#9ead86" }}
+            style={{ height: "390px", backgroundColor: "#9ead86" }}
           >
-            <div className="w-2/3 h-full border-2 border-black"></div>
+            <div className="w-2/3 h-full p-1 border-2 border-black">
+              {renderCells().map((row) => (
+                <div className="flex">
+                  {row.map((x) => (
+                    <div
+                      className="border border-black opacity-25"
+                      style={{ padding: "2px", margin: "0 2px 2px 0" }}
+                    >
+                      <div
+                        key={x}
+                        className="bg-black"
+                        style={{
+                          width: "10px",
+                          height: "10px",
+                        }}
+                      ></div>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
