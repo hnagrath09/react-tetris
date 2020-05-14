@@ -1,5 +1,7 @@
 import React from "react";
 
+import Cell from "./components/Cell";
+
 const App = () => {
   const renderCells = () => {
     const arr = [];
@@ -44,19 +46,7 @@ const App = () => {
               {renderCells().map((row) => (
                 <div className="flex">
                   {row.map((x) => (
-                    <div
-                      className="border border-black opacity-25"
-                      style={{ padding: "2px", margin: "0 2px 2px 0" }}
-                    >
-                      <div
-                        key={x}
-                        className="bg-black"
-                        style={{
-                          width: "10px",
-                          height: "10px",
-                        }}
-                      ></div>
-                    </div>
+                    <Cell key={x} />
                   ))}
                 </div>
               ))}
