@@ -1,19 +1,102 @@
-import React from "react";
+import React, { useState, useMemo, useEffect } from "react";
 
-import Cell from "./components/Cell";
+import Display from "./components/Display";
+import { randomTetrimino } from "./tetriminos";
 
 const App = () => {
-  const renderCells = () => {
+  // moveLeft, moveRight, moveDown, rotation, dropTetrimino, collision, clearRow, updateActiveCells, updateScore
+  const [activeTetrimino, setActiveTetrimino] = useState({
+    pos: { x: 0, y: 3 },
+    tetrimino: randomTetrimino().shape,
+  });
+  const [nextTetrimino, setNextTetrimino] = useState({
+    tetrimino: randomTetrimino().shape,
+  });
+  const [pause, setPause] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (
+        !pause &&
+        activeTetrimino.pos.x + activeTetrimino.tetrimino.length - 1 < 19
+      ) {
+        setActiveTetrimino({
+          pos: { x: activeTetrimino.pos.x + 1, y: activeTetrimino.pos.y },
+          tetrimino: activeTetrimino.tetrimino,
+        });
+      }
+    }, 1000);
+
+    return () => {
+      window.clearInterval(interval);
+    };
+  }, [activeTetrimino, pause]);
+
+  const activeCells = useMemo(() => {
+    // Create an empty 2D array of 20 X 10
     const arr = [];
-    let h = 0;
     for (let i = 0; i < 20; i++) {
       arr[i] = [];
       for (let j = 0; j < 10; j++) {
-        arr[i].push(h);
-        h++;
+        arr[i].push(0);
+      }
+    }
+    // Update values with activeTetrimino shape at it's position
+    // Edge Case: Handle empty rows in tetrimino shape
+    const n = activeTetrimino.tetrimino.length;
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n; j++) {
+        arr[activeTetrimino.pos.x + i][activeTetrimino.pos.y + j] =
+          activeTetrimino.tetrimino[i][j];
       }
     }
     return arr;
+  }, [activeTetrimino]);
+
+  const moveLeft = () => {
+    // Edge Case: Handle empty rows in shape
+    if (activeTetrimino.pos.y > 0) {
+      setActiveTetrimino({
+        pos: { x: activeTetrimino.pos.x, y: activeTetrimino.pos.y - 1 },
+        tetrimino: activeTetrimino.tetrimino,
+      });
+    }
+    setPause(false);
+  };
+
+  const moveRight = () => {
+    // Edge Case: Handle empty rows in shape
+    if (activeTetrimino.pos.y + activeTetrimino.tetrimino.length - 1 < 9) {
+      setActiveTetrimino({
+        pos: { x: activeTetrimino.pos.x, y: activeTetrimino.pos.y + 1 },
+        tetrimino: activeTetrimino.tetrimino,
+      });
+    }
+    setPause(false);
+  };
+
+  const moveDown = () => {
+    // Edge Case: Handle empty rows in shape
+    if (activeTetrimino.pos.x + activeTetrimino.tetrimino.length - 1 < 19) {
+      setActiveTetrimino({
+        pos: { x: activeTetrimino.pos.x + 1, y: activeTetrimino.pos.y },
+        tetrimino: activeTetrimino.tetrimino,
+      });
+    }
+    setPause(false);
+  };
+
+  const handleRotation = () => {
+    // Transpose of a matrix
+    const flipMatrix = (matrix) =>
+      matrix[0].map((column, index) => matrix.map((row) => row[index]));
+
+    // Receive 90deg clockwise rotated matrix
+    const rotateMatrix = (matrix) =>
+      flipMatrix(activeTetrimino.tetrimino.reverse());
+
+    setActiveTetrimino({ pos: activeTetrimino.pos, tetrimino: rotateMatrix() });
+    setPause(false);
   };
 
   return (
@@ -38,20 +121,7 @@ const App = () => {
           </div>
         </div>
         <div className="px-8 mb-4 border-b-8 border-l-8 border-r-8 border-black">
-          <div
-            className="w-full p-2 mx-auto mt-8 mb-8 border border-gray-700 shadow-inner"
-            style={{ height: "390px", backgroundColor: "#9ead86" }}
-          >
-            <div className="w-2/3 h-full p-1 border-2 border-black">
-              {renderCells().map((row) => (
-                <div className="flex">
-                  {row.map((x) => (
-                    <Cell key={x} />
-                  ))}
-                </div>
-              ))}
-            </div>
-          </div>
+          <Display activeCells={activeCells} nextTetrimino={nextTetrimino} />
         </div>
       </div>
       <div className="px-12">
@@ -60,6 +130,9 @@ const App = () => {
             <div
               className="w-12 h-12 ml-2 bg-green-500 border border-black rounded-full"
               style={{ boxShadow: "inset 0 3px 6px hsla(0,0%,100%,.8)" }}
+              onClick={() => {
+                setPause(!pause);
+              }}
             ></div>
             <span className="text-sm text-gray-700">Pause(P)</span>
           </div>
@@ -85,6 +158,7 @@ const App = () => {
               backgroundColor: "#5a65f1",
               boxShadow: "inset 0 5px 10px hsla(0,0%,100%,.8)",
             }}
+            onClick={handleRotation}
           ></div>
           <span className="mt-8 ml-2 text-sm text-gray-700">Rotation</span>
         </div>
@@ -96,6 +170,7 @@ const App = () => {
                 backgroundColor: "#5a65f1",
                 boxShadow: "inset 0 5px 10px hsla(0,0%,100%,.8)",
               }}
+              onClick={moveLeft}
             ></div>
             <span className="ml-6 text-sm text-gray-700">Left</span>
           </div>
@@ -106,6 +181,7 @@ const App = () => {
                 backgroundColor: "#5a65f1",
                 boxShadow: "inset 0 5px 10px hsla(0,0%,100%,.8)",
               }}
+              onClick={moveRight}
             ></div>
             <span className="ml-6 text-sm text-gray-700">Right</span>
           </div>
@@ -117,6 +193,7 @@ const App = () => {
               backgroundColor: "#5a65f1",
               boxShadow: "inset 0 5px 10px hsla(0,0%,100%,.8)",
             }}
+            onClick={moveDown}
           ></div>
           <span className="ml-6 text-sm text-gray-700">Down</span>
         </div>

@@ -1,9 +1,10 @@
 import React from "react";
+import clsx from "clsx";
 
-const Cell = () => {
+const Cell = ({ active }) => {
   return (
     <div
-      className="border border-black opacity-25"
+      className={clsx("border border-black", active ? "" : "opacity-25")}
       style={{ padding: "2px", margin: "0 2px 2px 0" }}
     >
       <div
